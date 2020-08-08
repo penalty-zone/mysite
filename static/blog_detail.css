@@ -1,0 +1,103 @@
+*{
+    margin: 0;
+    padding: 0;
+
+}
+body{
+    width: 100%;
+    height: 100%;
+}
+p {
+    margin: 0 0 3px;
+}
+div.bg_color{
+    background-color: #dfe6e9;
+}
+.center_1{
+    padding-left: auto;
+    padding-right: auto;
+    height: auto;
+    overflow: auto;
+}
+.h1, .h2, .h3, h1, h2, h3 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+.center_1 > .center_top{
+    text-align: center;
+    width: 200px;
+    height: auto;
+    margin: 10px auto;
+}
+
+.buttom{
+    line-height: -5px;
+    letter-spacing: 2px;
+    text-indent: 1em;
+    overflow: auto;
+}
+.center_1 > .span_2{
+    float: right;
+}
+div.like{
+    color: #00cec9;
+    cursor: pointer;
+    display: inline-block;
+    padding: 0.5em 0.3em;
+}
+
+div.comment_area{
+    margin-top: 2em;
+
+}
+h3.comment_area_title {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 0.4em;
+}
+
+
+textarea.form-control {
+    font-family: inherit;
+    resize: none;
+    outline: none;
+}
+
+input#btn-right{
+    float: right;
+}
+
+div.django-ckeditor-widget{
+    width: 100%
+}
+
+div.comment{
+    border-bottom: 1px dashed #ccc;
+    margin-bottom: 0.5em;
+    padding-bottom: 0.5em;
+}
+div#comment_list{
+    height: 600px;
+    overflow: auto;
+}
+div.reply{
+    margin-left: 2em;
+}
+
+
+div#reply_cotent_container{
+    display: none;
+    border: 1px solid #d1d1d1;
+    border-bottom: none;
+    background-color: #f8f8f8;
+    overflow: hidden;
+    padding: 1em 1em 0.5em;
+}
+
+p#reply_title{
+    border-bottom: 1px dashed #ccc;
+    padding-bottom: 0.5em;
+}
+.active_2{
+    color: #f22;
+}
+

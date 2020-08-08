@@ -1,0 +1,294 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/base.css">
+    <script type="text/javascript" src="/static/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/js_nav_01.js"></script>
+    {% block header_extends %}{% endblock %}
+    {% block js_01 %}{% endblock %}
+</head>
+<body>
+<!-- 导航条 -->
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="{% url 'home' %}">个人博客网站</a>
+    </div>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav" id="grey_01">
+        <li class="active"><a href="{% url 'home' %}">首页 <span class="sr-only">(current)</span></a></li>
+        <li><a href="{% url 'blog_list' %}">博客</a></li>
+      </ul>
+      <form class="navbar-form navbar-left">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search">
+        </div>
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+        {% if not user.is_authenticated %}
+          <li class="login_1"><a href="javascript:;">登录/注册</a></li>
+        {% else %}
+          <li class="dropdown">
+            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" role="button">
+            {{ user.get_nickname_or_username }}
+              
+              <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="{% url 'user_info'  %}">个人资料</a></li>
+              {% if user.is_staff or user.is_superuser %}
+                <li><a href="{% url 'admin:index' %}">后台管理</a></li>
+              {%endif%}
+              <li><a href="{% url 'change_password' %}?from={{ request.get_full_path }}">修改密码</a></li>
+              <li><a href="javascript:;">Something else here</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="{% url 'logout' %}">退出</a></li>
+            </ul>
+          </li>
+          {% endif %}
+      </ul>
+          <div class="login_2">
+          {% if user.is_authenticated %}
+            {% csrf_token %}
+            <span class="glyphicon glyphicon-remove close_2" aria-hidden="true"></span>
+            <h3 >
+            <div class="wrapper">
+              <div class="typing-demo_2">
+                请勿重复登录
+              </div>
+            </div>              
+            </h3>
+          {% else %}          
+<!-- 登录框架 -->
+      <div class="cotn_principal">
+        <span class="glyphicon glyphicon-remove close_2" aria-hidden="true"></span>
+        <div class="cont_centrar">
+          <div class="cont_login">
+            <div class="cont_info_log_sign_up">
+              <div class="col_md_login">
+                 <div class="cont_ba_opcitiy">
+                    <h2>LOGIN</h2>  
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p> 
+                    <button class="btn_login" onclick="cambiar_login()">LOGIN</button>
+                  </div>
+              </div>
+              <div class="col_md_sign_up">
+                <div class="cont_ba_opcitiy">
+                  <h2>SIGN UP</h2>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                  <button class="btn_sign_up" onclick="cambiar_sign_up()">SIGN UP</button>
+                </div>
+              </div>
+            </div>
+          <div class="cont_back_info">
+             <div class="cont_img_back_grey">
+             <img src="/static/1.jpg" alt="" />
+             </div>
+          </div>
+          <div class="cont_forms" >
+              <div class="cont_img_back_">
+                <img src="/static/1.jpg" alt="" />
+              </div>
+
+              
+
+            <div class="cont_form_login ">
+                <a href="javascript:;" onclick="ocultar_login_sign_up()" ><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></a>
+                <span class="glyphicon glyphicon-remove close_1" aria-hidden="true"></span>
+                <h2>LOGIN</h2>
+                <form id="login_medal_form" action="" method="POST">
+                  {% csrf_token %}
+                  <input class="user_no" type="text" placeholder="User" name="username_or_email"/>
+                  <input class="password_no" type="password" placeholder="password" name="password"/>
+                  <button type="submit" class="btn_login">LOGIN</button>
+                </form>
+                <span ><a style="position: relative;top: 10px;"href="{% url 'forgot_password' %}?from={{ request.get_full_path }}">忘记密码?</a></span>
+                <span id="login_medal_tip" class="text-danger"></span>
+            </div>
+
+            <div class="cont_form_sign_up">
+              <a href="javascript:;" onclick="ocultar_login_sign_up()"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></a>
+              <span class="glyphicon glyphicon-remove close_1" aria-hidden="true"></span>
+              <h2>SIGN UP</h2>
+              <form id="sign_medal_form" action="" method="POST">
+                {% csrf_token %}
+                <input type="text" placeholder="User" name="username"/>
+                <input type="password" placeholder="password" name="password"/>
+                <input type="password" placeholder="Confirm Password" name="password_again"/>
+                <input id="id_email_2" type="text" placeholder="Email" name="email"/>
+                <input type="text"placeholder="verification_code" name="verification_code"/>
+                <button id="send_code_3" type="button" class="btn btn-primary pull-left">发送验证码</button>
+                <button type="submit" class="btn_sign_up">SIGN UP</button>
+              </form> 
+              
+              
+            </div>
+            
+          </div>   
+        </div>
+       </div>
+      </div>
+      {% endif %}
+ 
+<!-- 登陆框架结束 -->
+            
+          </div>
+    </div>
+  </div>
+</nav>
+<div class="cont_img_back_2">
+ <!--    <img src="/static/1.jpg" alt="" /> -->
+</div>
+{% block content %}{% endblock %}
+
+
+
+
+<!-- 登录页面处理方法 -->
+<script type="text/javascript">
+   
+
+
+  function cambiar_login() {
+    document.querySelector('.cont_forms').className = "cont_forms cont_forms_active_login";  
+    document.querySelector('.cont_form_login').style.display = "block";
+    document.querySelector('.cont_form_sign_up').style.opacity = "0";               
+
+    setTimeout(function(){  document.querySelector('.cont_form_login').style.opacity = "1"; },400);  
+      
+    setTimeout(function(){    
+    document.querySelector('.cont_form_sign_up').style.display = "none";
+    },200);  
+  }
+
+  function cambiar_sign_up(at) {
+    document.querySelector('.cont_forms').className = "cont_forms cont_forms_active_sign_up";
+    document.querySelector('.cont_form_sign_up').style.display = "block";
+    document.querySelector('.cont_form_login').style.opacity = "0";
+    setTimeout(function(){  document.querySelector('.cont_form_sign_up').style.opacity = "1";
+    },100);  
+
+    setTimeout(function(){   document.querySelector('.cont_form_login').style.display = "none";
+    },400);  
+  }    
+
+
+
+  function ocultar_login_sign_up() {
+
+    document.querySelector('.cont_forms').className = "cont_forms";  
+    document.querySelector('.cont_form_sign_up').style.opacity = "0";               
+    document.querySelector('.cont_form_login').style.opacity = "0"; 
+    setTimeout(function(){
+    document.querySelector('.cont_form_sign_up').style.display = "none";
+    document.querySelector('.cont_form_login').style.display = "none";
+    },500);  
+  }        
+      
+  $("#send_code_3").click(function(){
+
+    var email = $("#id_email_2").val();
+    if(email == ""){
+        // $("#tip").text("*邮箱不能为空");
+        alert("asd");
+        return false;
+    }
+      //发送验证码
+    $.ajax({
+      url:"{% url 'send_verification_code' %}",
+      type: "GET",
+      data:{
+          'email':email,
+          'send_for': 'register_code'
+      },
+      cache: false,
+      success:function(data){
+          if (data['status'] == "ERROR") {
+              alert(data['status']);    
+          }   
+      }
+    });
+    $(this).addClass('disabled');
+        $(this).attr('disabled', true);
+        var time = 30;
+        $(this).text(time+'s');
+        var interval = setInterval(() => {
+            if(time <= 0 ){
+                clearInterval(interval);
+                $(this).removeClass('disabled');
+                $(this).attr('disabled', false);
+                $(this).text('发送验证码');
+                return false;
+            }
+            time --;
+            $(this).text(time+'s');
+        }, 1000);
+    });
+  $("#login_medal_form").submit(function(event){
+    if($(".user_no").val() == ""){
+      alert("用户名为空");
+      return false;
+    }
+    if($(".password_no").val() == ""){
+      alert("密码为空");
+      return false;
+    }
+      event.preventDefault();
+      $.ajax({
+        url: '{% url "login_for_medal" %}',
+        type:'POST',
+        data: $(this).serialize(),
+        cache: false,
+        success: function(data){
+          if (data['status']=='SUCCESS') {
+              $(".login_2").stop().fadeOut(100);
+              window.location.reload()
+          }else{
+            $('#login_medal_tip').text('用户名或密码错误')
+          }
+        }
+      });
+  });
+
+  $("#sign_medal_form").submit(function(event){
+      event.preventDefault();
+      $.ajax({
+        url: '{% url "sign_for_medal" %}',
+        type:'POST',
+        data: $(this).serialize(),
+        cache: false,
+        success: function(data){
+          if (data['status']=='SUCCESS') {
+              $(".login_2").stop().fadeOut(100);
+              window.location.reload()
+          }else{
+            alert(data['reg_form_error']);
+          }
+        },
+        error: function(data){
+          alert("请填写完整");
+        }
+      });
+  });
+
+
+</script>
+
+</body>
+</html>
+{% block script_extends %}{% endblock %}
+
+
+

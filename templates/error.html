@@ -1,0 +1,19 @@
+
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+    我的网站|错误
+{% endblock %}
+
+{% block header_extends %}
+
+{% endblock %}
+
+
+{% block content %}
+    {% csrf_token %}
+    {{ message }} 
+    <br>
+    <a href="{{ redirect_to }}">返回页面</a>重新登录或注册
+{% endblock %}

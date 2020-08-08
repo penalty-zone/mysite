@@ -1,0 +1,293 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load comment_tags %}
+{% load likes_tags %}
+{# 页面标题 #}
+{% block title %}
+    {{ blog.title }}
+{% endblock %}
+<!-- {% load staticfiles %} -->
+{% block header_extends %}
+    <link rel="stylesheet" href="/static/css/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" type="text/css" href="/static/blog_detail.css">
+    <script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+    <script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}" ></script>
+    <script src="/static/js/jquery.mCustomScrollbar.concat.min.js"></script>
+{% endblock %}
+
+{% block js_01 %}
+<script type="text/javascript">
+    $(function(){
+        // 自定义滚动条
+        $('#comment_list').mCustomScrollbar();
+        $("#grey_01>li:nth-child(2)").addClass("active");
+        $("#grey_01>li:nth-child(2)").siblings().removeClass("active");
+        
+        $("#comment_form").submit(function(event){
+            // 更新数据到 textarea中 需要先执行下面代码,
+            // 因为:富文本编辑器是一个嵌套页面 需要把值拿到textarea中才提交
+            $('#comment_error').text('');
+            if(CKEDITOR.instances['id_text'].document.getBody().getText().trim()==''){
+                $('#comment_error').text('评论不能为空');
+                event.preventDefault();
+            }
+            CKEDITOR.instances['id_text'].updateElement();
+            // 异步提交
+            $.ajax({
+                url:"{% url 'update_comment' %}",
+                type: "POST",
+                data:$(this).serialize(),
+                cache: false,
+                success:function(data){
+                    if (data['status']=="SUCCESS") {
+                        //插入数据
+                        if($('#reply_comment_id').val()=='0'){
+                            //插入评论   
+                            var $comment_html=$(`
+                            <div id="root_${data['pk']}" class="comment">
+                            <span>${data['username']}</span>
+                            <span>(${data['comment_time']})</span>
+                            <div id="comment_${data['pk']}">
+                                ${data['text']}
+                            </div>
+                            <div class="like" onclick="like_Change(this, '${data['content_Type']}', ${data['pk']})">
+                                <span id="active_2" class="glyphicon glyphicon-thumbs-up"></span>
+                                <span class="like_num">0</span>  
+                            </div>  
+                            <a href="javascript:reply(${data['pk']});">回复</a>
+                            </div>`);
+                            $('#comment_list').prepend($comment_html);
+                        }else{
+                            //插入回复    
+                            var $reply_html=$(`
+                            <div class="reply">
+                            <span>${data['username']}</span>
+                            <span>(${data['comment_time']})</span>
+                            <span>回复</span>
+                            <span>${data['reply_to']}:</span>
+                            <div id="comment_${data['pk']}">
+                                ${data['text']}
+                            </div>
+                            <div class="like" onclick="like_Change(this, '${data['content_Type']}', ${data['pk']})">
+                                <span id="active_2" class="glyphicon glyphicon-thumbs-up"></span>
+                                <span class="like_num">0</span>  
+                            </div> 
+                            <a href="javascript:reply(${data['pk']});">回复</a>
+                            </div>`);
+                            $("#root_"+data['root_pk']).append($reply_html);
+                        }
+
+                        // 清空编辑框的内容
+                        CKEDITOR.instances['id_text'].setData('');
+                        $("#reply_cotent_container").hide();
+                        $("#reply_comment_id").val('0');
+
+                        $('#no_comment').remove();
+                        // $('#id_text').val('');  这个用不了
+                    }else{
+                        $('#comment_error').text(data['message']);
+                    }
+
+                },
+                error:function(xhr){
+                    console.log(xhr);
+                }
+            });
+            //组织点完按钮直接提交
+            //去掉表单的默认行为，否则报错
+            event.preventDefault();
+        });
+    });
+    function reply(reply_comment){
+                $("#reply_comment_id").val(reply_comment);
+                var html_1 = $("#comment_"+ reply_comment).html();
+                $("#reply_content").html(html_1);
+                $("#reply_cotent_container").show();
+                $("html").animate({
+                    scrollTop:$('#comment_form').offset().top - 60
+                },300,function(){
+                    CKEDITOR.instances['id_text'].focus();
+                });                
+            }
+    function like_Change(obj, content_type, object_id){
+        var is_like = obj.getElementsByClassName('active_2').length == 0;
+        $.ajax({
+            url: '{% url "like_change" %}',
+            type: 'GET',
+            data: {
+                content_type: content_type,
+                object_id: object_id,
+                is_like: is_like
+            },
+            cache: false,
+            success:function(data) {
+                if (data['status']=="SUCCESS"){
+                    var element = $(obj.getElementsByClassName('glyphicon'));
+                    if(is_like){
+                        element.addClass('active_2');
+                    }else{
+                        element.removeClass('active_2');
+                    }
+                    var element_2 = $(obj.getElementsByClassName('like_num'));
+                    element_2.text(data['liked_num']);
+                }else{
+                    if(data['code']==400){
+                        $(".login_2").stop().fadeIn(100);
+                    }else{
+                        alert(data['message']);    
+                    }
+                    
+                }
+            },
+            error:function(xhr){
+                
+                console.log(xhr);
+            }
+
+        });
+    }
+
+</script>
+{% endblock %}
+
+
+{# 页面内容 #}
+{% block content %}
+<div class="">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 col-md-10 col-sm-9 col-xs-9 center_1 bg_color">
+        <div class="center_top">
+            <h3>{{ blog.title }}</h3>
+            <p><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+            {{ blog.author }}</p>
+            <p>分类： <a href="{% url 'blogs_with_type' blog.blog_type.pk %}">
+            {{ blog.blog_type }}</a>
+            &nbsp;阅读({{ blog.get_read_num }})</p>
+            评论({% get_comment_count blog %})   
+        </div>          
+        <div class="buttom well">
+            <!-- 要显示的地方用|safe 不显示的地方用|striptags -->
+            <p>{{ blog.content|safe }}</p>         
+        </div>
+        <p class="span_2">
+            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+            {{ blog.created_time|date:"Y-m-d H:i:s" }}
+        </p>
+        <div class="like" onclick="like_Change(this,'{% get_content_type blog %}', {{ blog.pk }})">
+            <span id="active_2" class="glyphicon glyphicon-thumbs-up {% get_like_status blog %}"></span>
+            <span class="like_num">{% get_like_count blog %}</span>  
+        </div>
+
+    </div>
+    <div class="col-lg-10 col-md-10 col-sm-9 col-xs-9 blog_more bg_color">
+        <p>上一篇:
+            {% if previous_blog %}
+                <a href="{% url 'blog_detail' previous_blog.pk %}">{{ previous_blog.title }}</a>
+            {% else %}
+                到顶
+            {% endif %}
+                
+        </p>
+        <p>下一篇:
+            {% if next_blog %}
+                <a href="{% url 'blog_detail' next_blog.pk %}">{{ next_blog.title }}</a>
+            {% else %}
+                到顶
+            {% endif %}
+        </p>
+            </div>
+            </div>
+        </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 col-md-10 col-sm-9 col-xs-9 bg_color">
+                <div class="comment_area">
+                    <h3 class="comment_area_title">提交评论区域</h3>
+                    {% if user.is_authenticated %}
+
+                        <form id='comment_form' action="{% url 'update_comment' %}" method="POST">
+
+                            {% csrf_token %}
+                            <label for="comment_text">多发个评论大哥：{{ user.get_nickname_or_username }}</label>
+                            <div id="reply_cotent_container">
+                                <p id="reply_title">回复:</p>
+                                <div id="reply_content">
+                                    
+                                </div>
+                            </div>
+                            {% get_comment_form blog as comment_form %}
+                            {% for field in comment_form %}
+                                {{ field }}
+                            {% endfor %}
+                            <span id="comment_error" class="text-danger pull-left"></span>                          
+                            <input id="comment_prop" class="btn btn-primary pull-right"type="submit" name="评论" value="评论">
+                        </form>
+
+                    {% else %}
+                        未登录
+                        <a class="btn btn-primary" href="{% url 'login' %}?from={{ request.get_full_path }}">登录</a>
+                        ---
+                        <a class="btn btn-danger" href="{% url 'register' %}?from={{ request.get_full_path }}">注册</a>
+                    {% endif %}
+                </div>
+                <div class="comment_area">
+                    <h3 class="comment_area_title">查看评论区域</h3>
+                    <div id="comment_list" data-mcs-theme="inset-3">
+                        {% get_comment_list blog as comments %}
+                        {% for comment in comments %}
+                            <div id="root_{{ comment.pk }}" class="comment">
+                                <span>{{ comment.user.get_nickname_or_username }}</span>
+                                <span>({{ comment.comment_time|date:"Y-m-d H:i:s" }})</span>
+                                <div id="comment_{{ comment.pk }}">
+                                    {{ comment.text|safe }}
+                                </div>
+
+
+                                <div class="like" onclick="like_Change(this, '{% get_content_type comment %}', {{ comment.pk }})">
+                                    <span id="active_2" class="glyphicon glyphicon-thumbs-up {% get_like_status comment %}"></span>
+                                    <span class="like_num">{% get_like_count comment %}</span>  
+                                </div> 
+
+
+
+                                <a href="javascript:reply({{ comment.pk }});">回复</a>
+                            
+                            <!-- 谁(reply)把(comment)作为了(root_coment)并全部拿出来 -->
+                            {% for reply in comment.root_comment.all %}
+                            
+                                <div class="reply">
+                                    <span>{{ reply.user.get_nickname_or_username }}</span>
+                                    <span>({{ reply.comment_time|date:"Y-m-d H:i:s" }})</span>
+                                    <span>回复</span>
+                                    <span>{{ reply.reply_to }}:</span>
+                                    <div id="comment_{{ reply.pk }}">
+                                        {{ reply.text|safe }}
+                                    </div>
+
+
+                                    <div class="like" onclick="like_Change(this, '{% get_content_type reply %}', {{ reply.pk }})">
+                                        <span id="active_2" class="glyphicon glyphicon-thumbs-up {% get_like_status reply %}"></span>
+                                        <span class="like_num">{% get_like_count reply %}</span>  
+                                    </div> 
+
+
+                                    <a href="javascript:reply({{ reply.pk }});">回复</a>
+                                </div>
+                            {% endfor %}
+                            </div>
+                        {% empty %}
+                            <span id="no_comment">暂无评论</span>  
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+

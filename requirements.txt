@@ -1,0 +1,9 @@
+Django==2.0
+django-ckeditor==5.9.0
+django-js-asset==1.2.2
+django-markdown==0.8.4
+importlib-metadata==1.7.0
+Markdown==3.2.2
+Pillow==7.2.0
+pytz==2020.1
+zipp==3.1.0

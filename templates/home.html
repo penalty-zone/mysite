@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    我的网站|首页
+{% endblock %}
+
+{% block header_extends %}
+    <link rel="stylesheet" type="text/css" href="/static/home.css">
+    <script src="/static/highcharts.js"></script>
+{% endblock %}
+
+
+{% block content %}
+    <div class="wrapper">
+        <div class="typing-demo">
+      Welcome to my website
+        </div>
+    </div>
+    <!-- 图表 -->
+    <div id="container" ></div>
+
+
+    <!--  今天24小时内的热门博客-->
+    <div class="hot_title">
+
+        <h3>今天热门博客</h3>
+        <ul>
+            {% for hot_data in today_hot_data %}
+                <li>
+                <a href="{% url 'blog_detail' hot_data.content_object.pk %}">
+                    {{ hot_data.content_object.title }}
+                </a>({{ hot_data.read_num }})
+                </li>
+            {% empty %}
+                <li>今天没有热门博客</li>
+            {% endfor %}
+        </ul>        
+
+    </div>
+    <div class="hot_title">
+        <h3>昨天热门博客</h3>
+        <ul>
+            {% for hot_data in yesterday_hot_data %}
+                <li>
+                <a href="{% url 'blog_detail' hot_data.content_object.pk %}">
+                    {{ hot_data.content_object.title }}
+                </a>({{ hot_data.read_num }})
+                </li>
+            {% empty %}
+                <li>昨天没有热门博客</li>
+            {% endfor %}
+        </ul>       
+        
+    </div>
+    <div class="hot_title">
+        <h3>七天热门博客</h3>
+        <ul>
+            {% for hot_data in seven_hot_data %}
+                <li>
+                <a href="{% url 'blog_detail' hot_data.id %}">
+                    {{ hot_data.title }}
+                </a>({{ hot_data.read_num_sum }})
+                </li>
+
+            {% empty %}
+                <li>七天没有热门博客</li>
+            {% endfor %}
+        </ul>
+        
+    </div>
+    
+    
+        
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function(){
+        var myChart = Highcharts.chart('container', {
+            chart: {type: 'line'},
+            title: {text: null},
+            xAxis: {
+                categories: {{ dates|safe }},
+                title:{ text:"前七日阅读变化" }
+                // tickmarkPlacement: 'on', 
+            },
+            yAxis: {
+                title: {text: null},
+                labels:{enabled:false},
+                gridLinedDashStyle: 'Dash',
+            },
+            series: [{
+                name: '阅读量',
+                data: {{ read_nums }},
+                showInLegend: false,
+            }],
+            credits:{
+                enabled: false // 禁用版权信息
+            },
+            plotOptions: {
+                line: {
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            },            
+
+        });
+    }); 
+    </script>
+{% endblock %}

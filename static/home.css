@@ -1,0 +1,51 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+.center{
+    font-size: 50px;
+    margin-top: 1.5em;
+    margin-bottom: 2em;
+    text-align: center;
+}
+
+#container{
+    margin: 0 auto;
+    height: 20em;
+    min-width: 20em;
+    max-width: 30em;
+}
+.hot_title{
+    text-align: center;
+    margin-top: 2em;
+}
+
+.wrapper {
+    margin-top: 1.5em;
+    margin-bottom: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.typing-demo {
+  width: 22ch;
+  animation: typing 2s steps(22), blink .5s step-end infinite alternate;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 3px solid;
+  font-family: monospace;
+  font-size: 2em;
+}
+@keyframes typing {
+  from {
+    width: 0;
+  }
+}
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+
+

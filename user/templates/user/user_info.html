@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    个人资料
+{% endblock %}
+
+{% block header_extends %}
+<style type="text/css">
+  .bg_color{
+    background-color: #b2bec3;
+    height: 900px;
+  }
+  .change_nickname{
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding-top: 100px
+    box-sizing: border-box;
+    text-align: center;
+    z-index:6;
+    display: none;
+  }
+  .change_form_nickname{
+    margin: 300px auto;
+  }
+  .close_3{
+    top: 100px;
+    position: relative;
+  }
+  .change_email{
+    display: none;
+  }
+
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+  <div class="row">
+      <div class="col-xs-10 col-xs-offset-1">
+        {% if user.is_authenticated %}
+          <h2>{{ user.username }}</h2>
+          <ul>
+            <li>
+              <!-- {{ user.profile.nickname }} 这种也是一种方法只是调用思路要清晰-->
+              用户昵称:<span class="nick">{{ user.get_nickname }}({{user.username}})</span><a class="change_1" href="javascript:;">修改</a>
+            </li>
+            <li>
+              邮箱: {% if user.email %}
+                      <span class="em">{{ user.email }}</span>
+                    {% else %}
+                      未绑定<!-- <a class="change_2" href="javascript:;"> 绑定邮箱 </a> -->
+                      <a class="" href="{% url 'bind_email' %}?from={{ request.get_full_path }} "> 绑定邮箱 </a>
+<!--失效                       <div class="change_email">
+                        <form class="change_form_email"  action="" method="POST">
+                          {% csrf_token %}
+                          <input class="email" type="text" placeholder="请输入邮箱" name="email"/>
+                          <input type="submit" name="submit" value="绑定" />
+                        </form>
+                        <button class="close_4">返回</button>
+                        <span class="form_medal_tip_2"></span>
+                      </div> -->
+                    {% endif %}
+
+
+            </li>
+            <li>
+              上一次登陆时间：{{ user.last_login|date:"Y-m-d H:i:s" }}
+            </li>
+            <li>
+              密码:<a href="{% url 'change_password' %}?from={{ request.get_full_path }}">修改密码</a>
+            </li>
+          </ul>
+        {% else %}
+          <span>未登录</span>
+          <script type="text/javascript">
+            window.location.href='/';
+          </script>
+        {% endif %}
+      </div>
+  </div>
+</div>
+<div class="change_nickname">
+  <div class="container ">
+    <div class="row">
+      <div class="col-xs-10 col-xs-offset-1 bg_color" >
+        <span class="glyphicon glyphicon-remove close_3" aria-hidden="true">返回</span>
+          <form class="change_form_nickname"  action="" method="POST">
+            {% csrf_token %}
+            <input class="nickname" type="text" placeholder="请输入新昵称" name="nickname"/>
+            <input type="submit" name="submit" value="修改" />
+          </form>
+          <span class="form_medal_tip_1"></span> 
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $(function(){
+    nick_x();
+    function nick_x(){
+      $(".change_1").click(function () {
+      $(".change_nickname").stop().fadeIn(100);
+      }); 
+      $(".close_3").click(function () {
+        $(".change_nickname").stop().fadeOut(100);
+      });
+      $(".change_form_nickname").submit(function(event){
+        var val_1 = $(".nickname").val();
+        event.preventDefault();
+        $.ajax({
+          url: '{% url "change_nickname" %}',
+          type:'POST',
+          data: $(this).serialize(),
+          cache: false,
+          success: function(data){
+            if (data['status']=='SUCCESS') {
+                $(".change_nickname").stop().fadeOut(100);
+                $(".nick").text(val_1);
+            }else{
+              $('.form_medal_tip_1').text('修改错误');
+            }
+          }
+        });
+      });
+    }
+//无用代码
+    // email_x();
+    // function email_x(){
+    //   $(".change_2").click(function () {
+    //     $(".change_email").stop().fadeIn(100);
+    //   });
+    //   $(".close_4").click(function () {
+    //     $(".change_email").stop().fadeOut(100);
+    //   });
+    //   $(".change_form_email").submit(function(event){
+    //   var val_1 = $(".email").val();
+    //   event.preventDefault();
+    //   $.ajax({
+    //     url: '{% url "change_email" %}',
+    //     type:'POST',
+    //     data: $(this).serialize(),
+    //     cache: false,
+    //     success: function(data){
+    //       if (data['status']=='SUCCESS') {
+    //           $(".change_email").stop().fadeOut(100);
+    //           $(".em").text(val_1);
+    //       }else{
+    //         $('.form_medal_tip_2').text('修改错误')
+    //         }
+    //       }
+    //     });
+    //   });
+    // }
+
+});
+   
+  
+</script>           
+{% endblock %}
+

@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load comment_tags %}
+{% load likes_tags %}
+
+{# 页面标题 #}
+{% block title %}
+    我的博客
+{% endblock %}
+{% block header_extends %}
+    <link rel="stylesheet" type="text/css" href="/static/blog_list.css">
+{% endblock %}
+
+{% block js_01 %}
+<script type="text/javascript">
+    $(function(){
+        $("#grey_01>li:nth-child(2)").addClass("active");
+        $("#grey_01>li:nth-child(2)").siblings().removeClass("active");
+        // $(".active_1").click(function(){
+        //     $(this).addClass("active");
+        //     $(this).siblings().removeClass("active");
+
+        // })；
+        $(".active_1").click(function(){
+            $(this).removeClass("active")
+        })
+    });
+
+</script>
+{% endblock %}
+
+            {% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-10 col-md-10 col-sm-9 col-xs-9">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">博客列表</h3>
+                </div>
+                {% for blog in blogs %}
+                    <div class="panel-body Standard_0">
+                        <a href="{% url 'blog_detail' blog.pk %}">
+                            <div id="Standard_1">
+                                <h4>{{ blog.title }}</h4>
+                            </div>
+                        </a>
+                        <span class="span_1">{{ blog.blog_type }}</span>
+                        <span class="glyphicon glyphicon-tags span_1" aria-hidden="true"></span>
+                        
+                    <div class="well" id="center_1">
+                        <p>{{ blog.content|striptags|truncatechars:40 }}</p>
+                        <span class="span_2">
+                            {{ blog.created_time }} 
+                        &nbsp;阅读-({{ blog.get_read_num }})
+                        &nbsp;评论-({% get_comment_count blog %})
+                        &nbsp;喜欢-({% get_like_count blog %})
+                        </span>
+                        <span class="glyphicon glyphicon-time span_2" aria-hidden="true"></span>
+                        
+                    </div>
+        
+                    <hr id="border_buttom"/>
+                    </div>
+                    {% empty %}
+                    <p>---暂无博客，敬请期待---</p> 
+                {% endfor %}
+            </div>
+        <div>
+            
+              <ul class="pagination">
+                <li>
+                    {# 上一页 #}
+                    {% if page_of_blogs.has_previous %}
+                    <a href="?page={{ page_of_blogs.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                    {% else %}
+                        <span aria-hidden="true">&laquo;</span>
+                    {%  endif %}  
+                </li>
+
+
+                {%  for page_num in page_range %}
+                    {% if page_num == page_of_blogs.number %}
+                        <li class="active" id="active"><span>{{ page_num }}</span></li>
+                    {% else %}
+                        {% if page_num == '...' %}
+                             <li id="active"><span>{{ page_num }}</span></li>
+                        {% else %}
+                            <li class=""id="active"><a href="?page={{page_num}}">{{ page_num }}</a></li>
+                        {% endif %}
+                        
+                    {% endif %}
+
+                {% endfor %}
+
+
+                {# 下一页 #}
+                <li>
+                    {% if page_of_blogs.has_next %}
+                    <a href="?page={{ page_of_blogs.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                    {% else %}
+                        <span aria-hidden="true">&raquo;</span>
+                    {%  endif %}
+                </li>
+              </ul>
+              <p>
+                (共有{{ blogs_count }}篇博客)
+                (当前第{{page_of_blogs.number}})
+              </p>
+            
+        </div>        
+        </div>
+
+
+
+        <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3"> 
+            <!-- <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">博客类型</h3>
+                </div>
+                {% for blog_type in blog_types %}
+                    <div class="panel-body">
+                        <a href="{% url 'blogs_with_type' blog_type.pk %}">
+                            <div id="Standard_1">
+                                <h3>{{ blog_type.type_name }}</h3>
+                            </div>
+                        </a>
+
+                    <hr id="border_buttom"/>
+                    </div>
+                    {% empty %}
+                    <li>暂无分类</li> 
+                {% endfor %}
+            </div> -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">博客分类</h3>
+                </div>
+                {% for blog in blog_types %}
+                    <div class="panel-body">
+                    <div class="well" id="center_2" >
+                        <li>
+                        <a href="{% url 'blogs_with_type' blog.pk %}" >
+                        {{blog.type_name}}({{ blog.blog_count }})</a>     
+                        </li>    
+                    </div>
+
+                    </div>
+                    {% empty %}
+                    <p>---暂无博客，敬请期待---</p> 
+                {% endfor %}
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    日期分类
+                </div>
+                <div class="panel-body">
+                    <ul>
+                        {% for blog_date,blog_count in blog_dates.items %}
+                        <li><a href="{% url 'blogs_with_date' blog_date.year blog_date.month %}">
+                            {{ blog_date|date:"Y-m" }}({{ blog_count }})
+                        </a>
+                            
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+
+        </div>
+    </div>      
+</div> 
+
+{% endblock %}
+
+
+
+
+
+
+

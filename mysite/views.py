@@ -24,9 +24,6 @@ def home(request):
     if seven_hot_data is None:
         seven_hot_data = get_seven_days_hot_blogs(Blog)
         cache.set('seven_hot_data', seven_hot_data, 3600)
-        print('cals')
-    else:
-        print('use caches')
     # seven_hot_data = get_seven_days_hot_blogs(Blog)
     today_hot_data = get_today_hot_data(blog_content_type)
     yesterday_hot_data = get_yesterday_hot_data(blog_content_type)

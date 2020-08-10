@@ -166,7 +166,7 @@ def send_verification_code(request):
     email = request.GET.get("email", "")
     send_for =request.GET.get('send_for', '')
     data = {}
-    if not User.objects.filter(email=email).exists():
+    if User.objects.filter(email=email).exists():
         data['status'] = "ERROR"
         return JsonResponse(data)
     

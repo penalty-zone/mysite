@@ -17,7 +17,7 @@ from .base import *
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY =os.environ['SECRET_KEY'] #'dze+3w2@_r-gr-5#abm6=@j)83b^$m7(tsc$1hoc3(vqfu9__5' #os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -28,14 +28,14 @@ ALLOWED_HOSTS = []
 
 
 
-DATABASE_PASSWORD = os.environ['DATABASE_PASSWORD']
+#DATABASE_PASSWORD =os.environ['PASSWORDMYSQL'] 
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mysite_db',
         'USER': 'lc',
-        'PASSWORD': DATABASE_PASSWORD,
+        'PASSWORD': 'mysql', #'mysql',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -62,7 +62,7 @@ EMAIL_PORT = 25
 
 EMAIL_HOST_USER = '1531947807@qq.com' #
 
-EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD'] #授权码
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']#'blicsvrlurykbafj' #授权码
 
 EMAIL_SUBJECT_PREFIX ='[刘创的博客]'
 

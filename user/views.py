@@ -166,15 +166,7 @@ def send_verification_code(request):
     email = request.GET.get("email", "")
     send_for =request.GET.get('send_for', '')
     data = {}
-<<<<<<< HEAD:user/views.py
-<<<<<<< HEAD
-=======
-    #这里是注册是发送邮件
-    #但是用户如果不使用正确的邮箱地址格式，还是会产生发送效果，这里需要
-    #添加一些判断email地址的正则表达式来作为判断email是否是某个运用商的
->>>>>>> fadabd9e75892f0f80929396f518a9be3d1cbfd4
-=======
->>>>>>> 9fcf52fbf61b404bf2d4277c182d232bd9889fd4:用户/views.py
+
     if User.objects.filter(email=email).exists():
         data['status'] = "ERROR"
         return JsonResponse(data)

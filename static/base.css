@@ -117,6 +117,21 @@ right: -10px;
 top: 9px;
 }
 
+.footer{
+  position: relative;
+  bottom: 0px;
+  margin-top: 3em;
+  background-color: #eee;
+  color: #555;
+}
+.web-info{
+  text-align: center;
+  padding-top: 2em;
+  padding-bottom: 1.5em;
+}
+.web-info > p{
+  margin-bottom: 0;
+}
 
 
 
